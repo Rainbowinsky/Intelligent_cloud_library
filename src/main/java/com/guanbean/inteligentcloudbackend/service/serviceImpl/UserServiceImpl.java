@@ -1,20 +1,30 @@
 package com.guanbean.inteligentcloudbackend.service.serviceImpl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guanbean.inteligentcloudbackend.exception.BusinessException;
 import com.guanbean.inteligentcloudbackend.exception.ErrorCode;
+import com.guanbean.inteligentcloudbackend.model.dto.user.UserQueryRequest;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.guanbean.inteligentcloudbackend.model.enums.UserRoleEnum;
 import com.guanbean.inteligentcloudbackend.model.vo.LoginUserVO;
+import com.guanbean.inteligentcloudbackend.model.vo.UserVO;
 import com.guanbean.inteligentcloudbackend.service.UserService;
 import com.guanbean.inteligentcloudbackend.mapper.UserMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.guanbean.inteligentcloudbackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -97,7 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @param userAccount
      * @param userPassword
      * @param request
-     * @return
+     * @return 登陆的用户信息
      */
 
     @Override
@@ -145,6 +155,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return loginUserVO;
     }
 
+    /**
+     *获取登陆用户信息
+     * @param request
+     * @return 用户信息
+     */
     @Override
     public User getLoginUser(HttpServletRequest request) {
         //先判断是否登陆
@@ -158,6 +173,80 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         currentUser = this.baseMapper.selectById(userId);
         return  currentUser;
     }
+
+    /**
+     * 用户登出
+     * @param request
+     * @return 是否登出成功
+     */
+    @Override
+    public boolean userLogout(HttpServletRequest request) {
+        //判断用户是否已经登陆
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        if(userObj==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        //移除登陆状态
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        return true;
+    }
+
+    /**
+     * 获取用户脱敏后的信息
+     * @param user
+     * @return
+     */
+    @Override
+    public UserVO getUserVO(User user) {
+        if(user == null){
+            return null;
+        }
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user,userVO);
+        return userVO;
+    }
+
+    /**
+     * 将列表用户全部脱敏
+     * @param list
+     * @return
+     */
+    @Override
+    public List<UserVO> getUserVOList(List<User> list) {
+        if(CollUtil.isEmpty(list)){
+            return new ArrayList<>();
+        }
+        return list.stream().map(this::getUserVO).collect(Collectors.toList());
+    }
+
+    /**
+     * 返回查询请求的查询构建
+     * @param userQueryRequest
+     * @return
+     */
+    @Override
+    public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
+        }
+        Long id = userQueryRequest.getId();
+        String userAccount = userQueryRequest.getUserAccount();
+        String userName = userQueryRequest.getUserName();
+        String userProfile = userQueryRequest.getUserProfile();
+        String userRole = userQueryRequest.getUserRole();
+        String sortField = userQueryRequest.getSortField();
+        String sortOrder = userQueryRequest.getSortOrder();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(ObjUtil.isNotNull(id), "id", id);
+        queryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
+        queryWrapper.like(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
+        queryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
+        queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
+        queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
+        return queryWrapper;
+    }
+
+
 
 }
 

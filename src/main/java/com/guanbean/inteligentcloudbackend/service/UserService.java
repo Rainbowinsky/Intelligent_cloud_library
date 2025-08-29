@@ -1,10 +1,14 @@
 package com.guanbean.inteligentcloudbackend.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.guanbean.inteligentcloudbackend.model.dto.user.UserQueryRequest;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guanbean.inteligentcloudbackend.model.vo.LoginUserVO;
+import com.guanbean.inteligentcloudbackend.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author MrJeson
@@ -46,4 +50,32 @@ public interface UserService extends IService<User> {
      * @return
      */
     User getLoginUser(HttpServletRequest request);
+
+    /**
+     * 用户登出
+     * @param request
+     * @return
+     */
+    boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 获取用户脱敏后的信息
+     * @param user
+     * @return
+     */
+    UserVO getUserVO(User user);
+
+    /**
+     * 获取用户脱敏后的信息列表
+     * @param list
+     * @return
+     */
+    List<UserVO> getUserVOList(List<User> list);
+
+    /**
+     * 返回添加用户请求的查询格式
+     * @param userQueryRequest
+     * @return
+     */
+    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 }

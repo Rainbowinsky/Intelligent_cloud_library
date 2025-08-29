@@ -1,4 +1,4 @@
-package com.guanbean.inteligentcloudbackend.model.dto;
+package com.guanbean.inteligentcloudbackend.model.dto.user;
 
 import lombok.Data;
 
