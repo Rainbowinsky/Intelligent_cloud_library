@@ -17,6 +17,7 @@ public class JsonConfig {
      * 添加 Long 转 json 精度丢失的配置
      */
     @Bean
+
     public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
         ObjectMapper objectMapper = builder.createXmlMapper(false).build();
         SimpleModule module = new SimpleModule();

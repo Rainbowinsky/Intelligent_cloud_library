@@ -1,10 +1,13 @@
 package com.guanbean.inteligentcloudbackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureQueryRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.user.UserQueryRequest;
+import com.guanbean.inteligentcloudbackend.model.entity.Picture;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guanbean.inteligentcloudbackend.model.vo.LoginUserVO;
+import com.guanbean.inteligentcloudbackend.model.vo.PictureVO;
 import com.guanbean.inteligentcloudbackend.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -78,4 +81,13 @@ public interface UserService extends IService<User> {
      * @return
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
+
+    /**
+     * 判断用户是否为管理员
+     * @param user
+     * @return
+     */
+    boolean isAdmin(User user);
+
 }

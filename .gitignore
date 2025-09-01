@@ -1,3 +1,6 @@
+### Custom ###
+application-local.yml
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -31,3 +34,6 @@ build/
 
 ### VS Code ###
 .vscode/
+application-local.yml
+application-local.yml
+application-local.yml
