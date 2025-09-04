@@ -9,7 +9,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guanbean.inteligentcloudbackend.exception.BusinessException;
 import com.guanbean.inteligentcloudbackend.exception.ErrorCode;
+import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureQueryRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.user.UserQueryRequest;
+import com.guanbean.inteligentcloudbackend.model.entity.Picture;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.guanbean.inteligentcloudbackend.model.enums.UserRoleEnum;
 import com.guanbean.inteligentcloudbackend.model.vo.LoginUserVO;
@@ -244,6 +246,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
         queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
         return queryWrapper;
+    }
+
+    /**
+     * 判断用户是否为管理员
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean isAdmin(User user) {
+
+        return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
     }
 
 
