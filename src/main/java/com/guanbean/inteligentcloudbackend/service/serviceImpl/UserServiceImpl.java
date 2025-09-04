@@ -126,8 +126,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         //加密密码
         String encryptPassword = getEncryptPassword(userPassword);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_account",userAccount);
-        queryWrapper.eq("user_password",encryptPassword);
+        queryWrapper.eq("userAccount",userAccount);
+        queryWrapper.eq("userPassword",encryptPassword);
         User user = this.baseMapper.selectOne(queryWrapper);
         if(user==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号不存在或者密码错误");
