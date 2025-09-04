@@ -10,9 +10,6 @@ import com.guanbean.inteligentcloudbackend.exception.BusinessException;
 import com.guanbean.inteligentcloudbackend.exception.ErrorCode;
 import com.guanbean.inteligentcloudbackend.exception.ThrowUtils;
 import com.guanbean.inteligentcloudbackend.manager.FileManager;
-import com.guanbean.inteligentcloudbackend.manager.upload.FilePictureUpload;
-import com.guanbean.inteligentcloudbackend.manager.upload.PictureUploadTemplate;
-import com.guanbean.inteligentcloudbackend.manager.upload.UrlPictureUpload;
 import com.guanbean.inteligentcloudbackend.model.dto.file.UploadPictureResult;
 import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureQueryRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureReviewRequest;
@@ -52,21 +49,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     @Resource
     private UserService userService;
 
-    @Resource
-    private FilePictureUpload filePictureUpload;
-
-    @Resource
-    private UrlPictureUpload urlPictureUpload;
-
-    /**
-     * 上传图片
-     * @param inputSource
-     * @param pictureUploadRequest
-     * @param loginUser
-     * @return
-     */
     @Override
-    public PictureVO uploadPicture(Object inputSource, PictureUploadRequest pictureUploadRequest, User loginUser) {
+    public PictureVO uploadPicture(MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, User loginUser) {
         ThrowUtils.throwIf(loginUser == null, ErrorCode.NO_AUTH_ERROR);
         // 用于判断是新增还是更新图片
         Long pictureId = null;
@@ -87,14 +71,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 上传图片，得到信息
         // 按照用户 id 划分目录
         String uploadPathPrefix = String.format("public/%s", loginUser.getId());
-
-        //根据inputSource的类型区分上传方式
-        PictureUploadTemplate uploadTemplate = filePictureUpload;
-        if(inputSource instanceof String){
-            uploadTemplate = urlPictureUpload;
-        }
-        //选择类型以后调用模板来上传
-        UploadPictureResult uploadPictureResult = uploadTemplate.uploadPicture(inputSource,uploadPathPrefix);
+        UploadPictureResult uploadPictureResult = fileManager.uploadPicture(multipartFile, uploadPathPrefix);
         // 构造要入库的图片信息
         Picture picture = new Picture();
         picture.setUrl(uploadPictureResult.getUrl());
