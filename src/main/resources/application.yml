@@ -17,7 +17,7 @@ spring:
 mybatis-plus:
   configuration:
 #    开启驼峰转化
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: false
 #    开发环境打印日志
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
