@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @Title 更新图片请求
  * @Author JidamnGuanBean
- * @Description
+ * @Description 图片更新请求
  * @Time 下午9:40
  */
 @Data

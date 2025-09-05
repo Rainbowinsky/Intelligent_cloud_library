@@ -1,16 +1,15 @@
 package com.guanbean.inteligentcloudbackend.service;
 
-import cn.hutool.core.util.ObjUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureQueryRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureReviewRequest;
+import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureUploadByBatchRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureUploadRequest;
 import com.guanbean.inteligentcloudbackend.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.guanbean.inteligentcloudbackend.model.vo.PictureVO;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -75,4 +74,13 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser
      */
     void fillReviewParams(Picture picture,User loginUser);
+
+    /**
+     * 批量抓取图片方法
+     *
+     * @param request
+     * @param loginUser
+     * @return 上传成功的图片数量
+     */
+    int uploadPictureByBatch(PictureUploadByBatchRequest request, User loginUser);
 }
