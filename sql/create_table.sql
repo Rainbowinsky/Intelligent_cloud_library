@@ -46,3 +46,6 @@ create table if not exists picture
     INDEX idx_tags (tags),                 -- 提升基于标签的查询性能
     INDEX idx_userId (userId)              -- 提升基于用户 ID 的查询性能
 ) comment '图片' collate = utf8mb4_unicode_ci;
+ALTER TABLE picture
+    -- 添加新列
+    ADD COLUMN thumbnailUrl varchar(512) NULL COMMENT '缩略图 url';

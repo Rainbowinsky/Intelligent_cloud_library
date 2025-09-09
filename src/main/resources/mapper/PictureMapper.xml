@@ -25,14 +25,15 @@
             <result property="reviewStatus" column="reviewStatus" jdbcType="INTEGER"/>
             <result property="reviewMessage" column="reviewMessage" jdbcType="VARCHAR"/>
             <result property="reviewTime" column="reviewTime" jdbcType="TIMESTAMP"/>
+            <result property="thumbnailUrl" column="thumbnailUrl" jdbcType="VARCHAR"/>
     </resultMap>
-
     <sql id="Base_Column_List">
-        id,url,name,
-        introduction,category,tags,
-        picSize,picWidth,picHeight,
-        picScale,picFormat,userId,
-        createTime,editTime,updateTime,
-        isDelete,reviewerId,reviewStatus,reviewMessage,reviewTime
+        id,url,thumbnailUrl,name,
+    introduction,category,tags,
+    picSize,picWidth,picHeight,
+    picScale,picFormat,userId,
+    createTime,editTime,updateTime,
+    isDelete
     </sql>
+
 </mapper>

@@ -83,4 +83,10 @@ public interface PictureService extends IService<Picture> {
      * @return 上传成功的图片数量
      */
     int uploadPictureByBatch(PictureUploadByBatchRequest request, User loginUser);
+
+    /**
+     * 删除图片
+     * @param oldPicture
+     */
+    void clearPictureFile(Picture oldPicture);
 }

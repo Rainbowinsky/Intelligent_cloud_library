@@ -25,6 +25,12 @@ public class Picture implements Serializable {
     private Integer reviewStatus;
 
     /**
+     * 缩略图 url
+     */
+    private String thumbnailUrl;
+
+
+    /**
      * 审核信息
      */
     private String reviewMessage;
