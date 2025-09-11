@@ -2,10 +2,8 @@ package com.guanbean.inteligentcloudbackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureQueryRequest;
-import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureReviewRequest;
-import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureUploadByBatchRequest;
-import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureUploadRequest;
+import com.guanbean.inteligentcloudbackend.model.dto.picture.*;
+import com.guanbean.inteligentcloudbackend.model.dto.space.SpaceAddRequest;
 import com.guanbean.inteligentcloudbackend.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
@@ -89,4 +87,26 @@ public interface PictureService extends IService<Picture> {
      * @param oldPicture
      */
     void clearPictureFile(Picture oldPicture);
+
+    /**
+     * 校验空间权限
+     * @param loginUser
+     * @param picture
+     */
+    void checkPictureAuth(User loginUser, Picture picture);
+
+    /**
+     * 删除空间内的照片
+     * @param pictureId
+     * @param loginUser
+     */
+    void deletePicture(long pictureId, User loginUser);
+
+    /**
+     * 编辑空间内图片
+     * @param pictureEditRequest
+     * @param loginUser
+     */
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
+
 }
