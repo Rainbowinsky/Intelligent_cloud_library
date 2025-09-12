@@ -11,6 +11,7 @@ import com.guanbean.inteligentcloudbackend.constant.UserConstant;
 import com.guanbean.inteligentcloudbackend.exception.BusinessException;
 import com.guanbean.inteligentcloudbackend.exception.ErrorCode;
 import com.guanbean.inteligentcloudbackend.exception.ThrowUtils;
+import com.guanbean.inteligentcloudbackend.model.dto.picture.SearchPictureByColorRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.space.*;
 import com.guanbean.inteligentcloudbackend.model.dto.space.SpaceEditRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.space.SpaceQueryRequest;
@@ -19,7 +20,9 @@ import com.guanbean.inteligentcloudbackend.model.entity.Space;
 import com.guanbean.inteligentcloudbackend.model.dto.space.SpaceLevel;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.guanbean.inteligentcloudbackend.model.enums.SpaceLevelEnum;
+import com.guanbean.inteligentcloudbackend.model.vo.PictureVO;
 import com.guanbean.inteligentcloudbackend.model.vo.SpaceVO;
+import com.guanbean.inteligentcloudbackend.service.PictureService;
 import com.guanbean.inteligentcloudbackend.service.SpaceService;
 import com.guanbean.inteligentcloudbackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +53,9 @@ public class SpaceController {
 
     @Resource
     private SpaceService spaceService;
+
+    @Resource
+    private PictureService pictureService;
     
     //构建本地缓存
     private final Cache<String, String> LOCAL_CACHE =
@@ -235,7 +241,6 @@ public class SpaceController {
                 .collect(Collectors.toList());
         return ResultUtils.success(spaceLevelList);
     }
-
 
 
 
