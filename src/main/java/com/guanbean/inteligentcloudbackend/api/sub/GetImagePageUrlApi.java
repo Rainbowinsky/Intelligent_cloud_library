@@ -1,5 +1,6 @@
 package com.guanbean.inteligentcloudbackend.api.sub;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.http.HttpException;
@@ -53,6 +54,8 @@ public class GetImagePageUrlApi {
         try {
             // 2. 发送 POST 请求到百度接口
             HttpResponse response = HttpRequest.post(url)
+                    // 这里需要指定acs-token 不然会响应系统异常
+                    .header("acs-token", RandomUtil.randomString(1))
                     .form(formData)
                     .timeout(5000)
                     .execute();
@@ -62,6 +65,7 @@ public class GetImagePageUrlApi {
             }
             // 解析响应
             String responseBody = response.body();
+            log.error("接口完整响应:"+responseBody);
             Map<String, Object> result = JSONUtil.toBean(responseBody, Map.class);
 
             // 3. 处理响应结果
@@ -82,6 +86,7 @@ public class GetImagePageUrlApi {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "搜索失败");
         }
     }
+    
 
     public static void main(String[] args) {
         // 测试以图搜图功能
@@ -90,4 +95,5 @@ public class GetImagePageUrlApi {
         System.out.println("搜索成功，结果 URL：" + result);
     }
 }
+
 

@@ -12,6 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import static org.bouncycastle.asn1.cms.CMSAttributes.contentType;
+
 /**
  * @Title
  * @Author JidamnGuanBean
@@ -41,6 +47,7 @@ public class AliYunAiApi {
         if (createOutPaintingTaskRequest == null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "扩图参数为空");
         }
+
         // 发送请求
         HttpRequest httpRequest = HttpRequest.post(CREATE_OUT_PAINTING_TASK_URL)
                 .header(Header.AUTHORIZATION, "Bearer " + apiKey)
