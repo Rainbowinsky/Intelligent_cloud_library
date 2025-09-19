@@ -9,6 +9,8 @@ import com.guanbean.inteligentcloudbackend.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.guanbean.inteligentcloudbackend.model.vo.PictureVO;
+import com.guanbean.inteligentcloudbackend.model.vo.UserVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -135,4 +137,11 @@ public interface PictureService extends IService<Picture> {
      */
     CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser);
 
+//    /**
+//     * 上传用户头像
+//     * @param inputSource
+//     * @param loginUser
+//     * @return
+//     */
+//    PictureVO uploadUserAvatar(Object inputSource, User loginUser);
 }

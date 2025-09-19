@@ -27,6 +27,11 @@ public class PictureUploadRequest implements Serializable {
      * 空间 id
      */
     private Long spaceId;
+    
+    /**
+     * 是否为头像
+     */
+    private Boolean isAvatar;
 
 
     /**

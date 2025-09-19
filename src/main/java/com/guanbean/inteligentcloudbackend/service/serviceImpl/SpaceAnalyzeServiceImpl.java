@@ -102,7 +102,7 @@ public class SpaceAnalyzeServiceImpl extends ServiceImpl<SpaceMapper, Space> imp
             checkSpaceAnalyzeAuth(spaceUsageAnalyzeRequest,loginUser);
             //统计图库使用空间
             QueryWrapper<Picture> queryWrapper = new QueryWrapper<>();
-            queryWrapper.select("pictureSize");
+            queryWrapper.select("picSize");
             //补充查询范围
             fillAnalyzeQueryWrapper(spaceUsageAnalyzeRequest,queryWrapper);
             List<Object> pictureObjList = pictureService.getBaseMapper().selectObjs(queryWrapper);

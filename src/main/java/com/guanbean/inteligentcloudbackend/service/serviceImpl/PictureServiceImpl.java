@@ -45,11 +45,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -114,6 +117,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             }
         }
 
+
         // 用于判断是新增还是更新图片
         Long pictureId = null;
         if (pictureUploadRequest != null) {
@@ -150,6 +154,28 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 按照用户 id 划分目录
         String uploadPathPrefix;
 
+        //根据inputSource的类型区分上传方式
+        PictureUploadTemplate uploadTemplate = filePictureUpload;
+        if(inputSource instanceof String){
+            uploadTemplate = urlPictureUpload;
+        }
+
+        //判断是否为上传头像
+        if(pictureUploadRequest.getIsAvatar()){
+            //如果是上传头像,则
+            uploadPathPrefix = String.format("avatar/%s",loginUser.getId());
+            UploadPictureResult uploadPictureResult = uploadTemplate.uploadPicture(inputSource,uploadPathPrefix);
+            User user = new User();
+            user.setUserAvatar(uploadPictureResult.getUrl());
+            user.setUpdateTime(new Date());
+            user.setId(loginUser.getId());
+            userService.updateById(user);
+            Picture picture = new Picture();
+            picture.setUserId(loginUser.getId());
+            picture.setUrl(uploadPictureResult.getUrl());
+            return PictureVO.objToVo(picture);
+        }
+
         //改为按照空间划分目录
         if(spaceId ==null){
             //公共图库
@@ -159,11 +185,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             uploadPathPrefix = String.format("space/%s",spaceId);
         }
 
-        //根据inputSource的类型区分上传方式
-        PictureUploadTemplate uploadTemplate = filePictureUpload;
-        if(inputSource instanceof String){
-            uploadTemplate = urlPictureUpload;
-        }
+
         //选择类型以后调用模板来上传
         UploadPictureResult uploadPictureResult = uploadTemplate.uploadPicture(inputSource,uploadPathPrefix);
         // 构造要入库的图片信息
@@ -175,6 +197,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         if (pictureUploadRequest != null && StrUtil.isNotBlank(pictureUploadRequest.getPicName())) {
             picName = pictureUploadRequest.getPicName();
         }
+        picture.setPicColor(uploadPictureResult.getPicColor());
         picture.setName(picName);
         picture.setPicSize(uploadPictureResult.getPicSize());
         picture.setPicWidth(uploadPictureResult.getPicWidth());
@@ -182,6 +205,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         picture.setPicScale(uploadPictureResult.getPicScale());
         picture.setPicFormat(uploadPictureResult.getPicFormat());
         picture.setUserId(loginUser.getId());
+
         //补充审核参数
         fillReviewParams(picture, loginUser);
         // 如果 pictureId 不为空，表示更新，否则是新增
@@ -208,6 +232,38 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
         return PictureVO.objToVo(picture);
     }
+
+//    /**
+//     * 上传用户头像
+//     * @param inputSource
+//     * @param loginUser
+//     * @return
+//     */
+//    @Override
+//    public PictureVO uploadUserAvatar(Object inputSource, User loginUser) {
+//
+//        User user  = new User();
+//            //说明是上传
+//            //定义上传路径为
+//            String uploadPathPrefix = String.format("avatar/%s",loginUser.getId());
+//            PictureUploadTemplate uploadTemplate = filePictureUpload;
+//            if(inputSource instanceof String){
+//                uploadTemplate = urlPictureUpload;
+//            }
+//            //选择类型以后调用模板来上传
+//            UploadPictureResult uploadPictureResult = uploadTemplate.uploadPicture(inputSource,uploadPathPrefix);
+//            user.setId(loginUser.getId());
+//            user.setUserAvatar(uploadPictureResult.getUrl());
+//            //修改数据库
+//            Boolean result =this.userService.updateById(user);
+//            ThrowUtils.throwIf(result,ErrorCode.OPERATION_ERROR,"更新失败");
+//
+//            //返回图片视图
+//            PictureVO pictureVO = new PictureVO();
+//            pictureVO.setUserId(user.getId());
+//            pictureVO.setUrl(user.getUserAvatar());
+//        return pictureVO;
+//    }
 
     /**
      * 获取图片的查询构建
@@ -521,8 +577,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 判断是否存在
         Picture oldPicture = this.getById(pictureId);
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
-        // 校验权限
-        checkPictureAuth(loginUser, oldPicture);
+        // 校验权限 已经使用注解鉴权
+//        checkPictureAuth(loginUser, oldPicture);
         // 开启事务
         transactionTemplate.execute(status -> {
             // 操作数据库
@@ -565,8 +621,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         long id = pictureEditRequest.getId();
         Picture oldPicture = this.getById(id);
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
-        // 校验权限
-        checkPictureAuth(loginUser, oldPicture);
+        // 校验权限 已经使用注解鉴权
+//        checkPictureAuth(loginUser, oldPicture);
         // 补充审核参数
         this.fillReviewParams(picture, loginUser);
         // 操作数据库
@@ -713,8 +769,8 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         Picture picture = Optional.ofNullable(this.getById(pictureId))
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ERROR));
 
-        // 权限校验
-        checkPictureAuth(loginUser, picture);
+        // 权限校验 已经使用注解鉴权
+//        checkPictureAuth(loginUser, picture);
         // 构造请求参数
         CreateOutPaintingTaskRequest taskRequest = new CreateOutPaintingTaskRequest();
         CreateOutPaintingTaskRequest.Input input = new CreateOutPaintingTaskRequest.Input();

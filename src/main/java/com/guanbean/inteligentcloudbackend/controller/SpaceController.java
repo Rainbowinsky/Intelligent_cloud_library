@@ -11,6 +11,7 @@ import com.guanbean.inteligentcloudbackend.constant.UserConstant;
 import com.guanbean.inteligentcloudbackend.exception.BusinessException;
 import com.guanbean.inteligentcloudbackend.exception.ErrorCode;
 import com.guanbean.inteligentcloudbackend.exception.ThrowUtils;
+import com.guanbean.inteligentcloudbackend.manager.auth.model.SpaceUserAuthManager;
 import com.guanbean.inteligentcloudbackend.model.dto.picture.SearchPictureByColorRequest;
 import com.guanbean.inteligentcloudbackend.model.dto.space.*;
 import com.guanbean.inteligentcloudbackend.model.dto.space.SpaceEditRequest;
@@ -27,6 +28,7 @@ import com.guanbean.inteligentcloudbackend.service.SpaceService;
 import com.guanbean.inteligentcloudbackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -64,6 +66,8 @@ public class SpaceController {
                     // 缓存 5 分钟移除
                     .expireAfterWrite(5L, TimeUnit.MINUTES)
                     .build();
+    @Autowired
+    private SpaceUserAuthManager spaceUserAuthManager;
 
     /**
      * 删除空间
@@ -139,8 +143,12 @@ public class SpaceController {
         // 查询数据库
         Space space = spaceService.getById(id);
         ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space,loginUser);
+        SpaceVO spaceVO = spaceService.getSpaceVO(space, request);
+        spaceVO.setPermissionList(permissionList);
         // 获取封装类
-        return ResultUtils.success(spaceService.getSpaceVO(space, request));
+        return ResultUtils.success(spaceVO);
     }
 
     /**

@@ -3,15 +3,14 @@ package com.guanbean.inteligentcloudbackend.service.serviceImpl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.guanbean.inteligentcloudbackend.exception.BusinessException;
 import com.guanbean.inteligentcloudbackend.exception.ErrorCode;
-import com.guanbean.inteligentcloudbackend.model.dto.picture.PictureQueryRequest;
+import com.guanbean.inteligentcloudbackend.manager.auth.StpKit;
 import com.guanbean.inteligentcloudbackend.model.dto.user.UserQueryRequest;
-import com.guanbean.inteligentcloudbackend.model.entity.Picture;
+import com.guanbean.inteligentcloudbackend.model.dto.user.UserUpdateRequest;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.guanbean.inteligentcloudbackend.model.enums.UserRoleEnum;
 import com.guanbean.inteligentcloudbackend.model.vo.LoginUserVO;
@@ -66,7 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     //2.检查用户账号是否存在
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_account",userAccount);
+        queryWrapper.eq("userAccount",userAccount);
         long count = this.baseMapper.selectCount(queryWrapper);
         if(count>0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号已存在");
@@ -136,6 +135,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         //执行登陆逻辑
         //保存用户的登陆态
         request.getSession().setAttribute(USER_LOGIN_STATE,user);
+        //保存登陆态到sa-token
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(USER_LOGIN_STATE,user);
         return this.getLoginUserVO(user);
     }
 
@@ -259,6 +261,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
     }
 
+    /**
+     * 更新用户信息
+     *
+     * @param userUpdateRequest
+     * @return
+     */
+
+    @Override
+    public User userUpdateRequest(UserUpdateRequest userUpdateRequest, Long id) {
+        User user = new User();
+        String userProfile = userUpdateRequest.getUserProfile();
+        String userName = userUpdateRequest.getUserName();
+        user.setUserProfile(userProfile);
+        user.setUserName(userName);
+        user.setId(id);
+
+        this.updateById(user);
+        return user;
+    }
 
 
 }

@@ -65,7 +65,7 @@ public class GetImagePageUrlApi {
             }
             // 解析响应
             String responseBody = response.body();
-            log.error("接口完整响应:"+responseBody);
+            log.info("接口完整响应:"+responseBody);
             Map<String, Object> result = JSONUtil.toBean(responseBody, Map.class);
 
             // 3. 处理响应结果

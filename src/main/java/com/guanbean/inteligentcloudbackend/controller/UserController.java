@@ -13,10 +13,13 @@ import com.guanbean.inteligentcloudbackend.model.dto.user.*;
 import com.guanbean.inteligentcloudbackend.model.entity.User;
 import com.guanbean.inteligentcloudbackend.model.enums.UserRoleEnum;
 import com.guanbean.inteligentcloudbackend.model.vo.LoginUserVO;
+import com.guanbean.inteligentcloudbackend.model.vo.PictureVO;
 import com.guanbean.inteligentcloudbackend.model.vo.UserVO;
+import com.guanbean.inteligentcloudbackend.service.PictureService;
 import com.guanbean.inteligentcloudbackend.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -33,11 +36,12 @@ import java.util.List;
 public class UserController {
     @Resource
     private UserService userService;
+    @Resource
+    private PictureService pictureService;
 
     /**
      * 用户注册
      */
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest registerRequest){
         ThrowUtils.throwIf(registerRequest==null,new BusinessException(ErrorCode.PARAMS_ERROR));
@@ -96,7 +100,7 @@ public class UserController {
         User user = new User();
         BeanUtils.copyProperties(userAddRequest, user);
         // 默认密码 12345678
-        final String DEFAULT_PASSWORD = "12345678";
+        final String DEFAULT_PASSWORD = "123456789";
         String encryptPassword = userService.getEncryptPassword(DEFAULT_PASSWORD);
         user.setUserPassword(encryptPassword);
         boolean result = userService.save(user);
@@ -154,6 +158,21 @@ public class UserController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+
+//    /**
+//     * 上传头像
+//     * @param multipartFile
+//     * @param request
+//     * @return
+//     */
+//    @PostMapping("/upload/user_avatar")
+//    public BaseResponse<PictureVO> uploadUserAvatar(@RequestPart("file") MultipartFile multipartFile, HttpServletRequest request){
+//        User loginUser = userService.getLoginUser(request);
+//        ThrowUtils.throwIf(multipartFile==null,ErrorCode.PARAMS_ERROR,"头像链接为空");
+//        PictureVO pictureVO =pictureService.uploadUserAvatar(multipartFile,loginUser);
+//
+//        return ResultUtils.success(pictureVO);
+//    }
 
     /**
      * 分页获取用户封装列表（仅管理员）
