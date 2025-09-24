@@ -60,6 +60,7 @@ public class SpaceUserServiceImpl extends ServiceImpl<SpaceUserMapper, SpaceUser
         if(spaceUserAddRequest.getUserId()==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"添加的用户不能为空");
         }
+
         SpaceUser spaceUser = new SpaceUser();
         BeanUtils.copyProperties(spaceUserAddRequest,spaceUser);
 
