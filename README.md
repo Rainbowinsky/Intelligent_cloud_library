@@ -18,8 +18,8 @@
 ### 展示：
 
 首页展示：
+<img width="2538" height="974" alt="屏幕截图 2025-09-24 135429" src="https://github.com/user-attachments/assets/c31997a4-f80c-4fed-b850-9eacfe0c31c9" />
 
-![image-20250924135530155](C:\Users\Mr李\AppData\Roaming\Typora\typora-user-images\image-20250924135530155.png)
 
 
 
