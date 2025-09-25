@@ -152,13 +152,13 @@ public class SpaceUserController {
      * @return
      */
     @PostMapping("/list/my")
-    private BaseResponse<List<SpaceUser>> ListMyTeamSpace(HttpServletRequest request){
+    private BaseResponse<List<SpaceUserVO>> ListMyTeamSpace(HttpServletRequest request){
         User loginUser = userService.getLoginUser(request);
         SpaceUserQueryRequest spaceQueryRequest = new SpaceUserQueryRequest();
         spaceQueryRequest.setUserId(loginUser.getId());
         List<SpaceUser> spaceUserList = spaceUserService.list(
                 spaceUserService.getQueryWrapper(spaceQueryRequest)
         );
-        return ResultUtils.success(spaceUserList);
+        return ResultUtils.success(spaceUserService.getSpaceUserVOList(spaceUserList));
     }
 }

@@ -92,13 +92,21 @@ public class PictureController {
      * 上传图片（可重新上传）
      */
     @PostMapping("/upload")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+//    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     @SaSpaceCheckPermission(value = SpaceUserPermissionConstant.PICTURE_UPLOAD)
     public BaseResponse<PictureVO> uploadPicture(
             @RequestPart("file") MultipartFile multipartFile,
             PictureUploadRequest pictureUploadRequest,
             HttpServletRequest request) {
+
         User loginUser = userService.getLoginUser(request);
+        //判断是否为上传头像
+        if(!pictureUploadRequest.getIsAvatar()){
+            if(!loginUser.getUserRole().equals(UserConstant.ADMIN_ROLE)){
+                throw new  BusinessException(ErrorCode.NO_AUTH_ERROR,"无权限");
+            }
+        }
+
         PictureVO pictureVO = pictureService.uploadPicture(multipartFile, pictureUploadRequest, loginUser);
         return ResultUtils.success(pictureVO);
     }
